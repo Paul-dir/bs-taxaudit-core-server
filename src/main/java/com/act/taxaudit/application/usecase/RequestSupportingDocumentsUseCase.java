@@ -1,0 +1,35 @@
+package com.act.taxaudit.application.usecase;
+
+import com.act.taxaudit.application.port.DeskAuditRepositoryPort;
+import com.act.taxaudit.application.port.EventPublisherPort;
+import com.act.taxaudit.domain.aggregate.DeskAudit;
+import com.act.taxaudit.domain.exception.ResourceNotFoundException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.UUID;
+
+@Service
+public class RequestSupportingDocumentsUseCase {
+
+    private final DeskAuditRepositoryPort repository;
+    private final EventPublisherPort eventPublisher;
+
+    public RequestSupportingDocumentsUseCase(DeskAuditRepositoryPort repository, EventPublisherPort eventPublisher) {
+        this.repository = repository;
+        this.eventPublisher = eventPublisher;
+    }
+
+    @Transactional
+    public DeskAudit execute(UUID deskAuditId, List<String> requestedDocumentTypes, String requestedByActorId) {
+        DeskAudit deskAudit = repository.findById(deskAuditId)
+            .orElseThrow(() -> new ResourceNotFoundException("DeskAudit", deskAuditId));
+
+        deskAudit.requestDocuments(requestedDocumentTypes, requestedByActorId);
+
+        DeskAudit saved = repository.save(deskAudit);
+        saved.pullEvents().forEach(eventPublisher::publish);
+        return saved;
+    }
+}
