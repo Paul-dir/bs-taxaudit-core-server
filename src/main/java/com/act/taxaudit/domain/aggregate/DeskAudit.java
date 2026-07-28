@@ -301,6 +301,15 @@ public class DeskAudit extends AggregateRoot {
 
     // Helper methods
 
+    public boolean hasOverdueDocumentRequests() {
+        if (documentRequests == null || documentRequests.isEmpty()) {
+            return false;
+        }
+        LocalDateTime now = LocalDateTime.now();
+        return documentRequests.stream()
+            .anyMatch(request -> request.getDueDate() != null && request.getDueDate().isBefore(now));
+    }
+
     private void validateStatusTransition(DeskAuditStatus from, DeskAuditStatus to) {
         // Status transition validation logic
     }

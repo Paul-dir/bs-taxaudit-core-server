@@ -14,4 +14,5 @@ public interface DeskAuditRepositoryPort {
     Optional<DeskAudit> findById(UUID id);
     List<DeskAudit> findByAuditCaseId(UUID auditCaseId);
     List<DeskAudit> findByStatus(String status);
+    List<DeskAudit> findAllOpenWithPendingDocumentRequests();
 }
