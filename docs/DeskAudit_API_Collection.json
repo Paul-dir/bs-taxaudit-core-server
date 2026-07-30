@@ -1,0 +1,98 @@
+{
+  "info": {
+    "name": "Desk Audit API Collection",
+    "description": "Complete API collection for testing Desk Audit Execution functionality",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "auditId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Start Desk Audit",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"auditCaseId\": \"12345678-1234-1234-1234-123456789012\",\n  \"tin\": \"1234567890\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/desk-audits",
+          "host": ["{{baseUrl}}"],
+          "path": ["desk-audits"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "    var jsonData = pm.response.json();",
+              "    pm.collectionVariables.set(\"auditId\", jsonData.id);",
+              "    console.log(\"Audit ID: \" + jsonData.id);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Gather Evidence",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"actorId\": \"auditor-001\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/desk-audits/{{auditId}}/evidence",
+          "host": ["{{baseUrl}}"],
+          "path": ["desk-audits", "{{auditId}}", "evidence"]
+        }
+      }
+    },
+    {
+      "name": "3. Request Supporting Documents",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"documentTypes\": [\"INVOICE\", \"RECEIPT\", \"BANK_STATEMENT\"],\n  \"requestedByActorId\": \"auditor-001\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/desk-audits/{{auditId}}/document-requests",
+          "host": ["{{baseUrl}}"],
+          "path": ["desk-audits", "{{auditId}}", "document-requests"]
+        }
+      }
+    }
+  ]
+}
