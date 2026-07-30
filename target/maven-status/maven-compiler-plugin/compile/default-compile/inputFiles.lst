@@ -52,5 +52,11 @@ C:\Users\HP\Documents\ITAS_PRO\bs-taxaudit-core-server\src\main\java\com\act\tax
 C:\Users\HP\Documents\ITAS_PRO\bs-taxaudit-core-server\src\main\java\com\act\taxaudit\engineadapter\dms\DmsMockAdapter.java
 C:\Users\HP\Documents\ITAS_PRO\bs-taxaudit-core-server\src\main\java\com\act\taxaudit\engineadapter\external\datawarehouse\DataWarehouseMockAdapter.java
 C:\Users\HP\Documents\ITAS_PRO\bs-taxaudit-core-server\src\main\java\com\act\taxaudit\engineadapter\external\thirdparty\ThirdPartyDataMockAdapter.java
+C:\Users\HP\Documents\ITAS_PRO\bs-taxaudit-core-server\src\main\java\com\act\taxaudit\engineadapter\notification\NotificationEngineMockAdapter.java
 C:\Users\HP\Documents\ITAS_PRO\bs-taxaudit-core-server\src\main\java\com\act\taxaudit\engineadapter\shared\BaseEngineAdapter.java
+C:\Users\HP\Documents\ITAS_PRO\bs-taxaudit-core-server\src\main\java\com\act\taxaudit\infrastructure\event\LoggingEventPublisherAdapter.java
+C:\Users\HP\Documents\ITAS_PRO\bs-taxaudit-core-server\src\main\java\com\act\taxaudit\persistence\adapter\DeskAuditRepositoryAdapter.java
+C:\Users\HP\Documents\ITAS_PRO\bs-taxaudit-core-server\src\main\java\com\act\taxaudit\persistence\jpa\entity\DeskAuditEntity.java
+C:\Users\HP\Documents\ITAS_PRO\bs-taxaudit-core-server\src\main\java\com\act\taxaudit\persistence\jpa\repository\DeskAuditJpaRepository.java
+C:\Users\HP\Documents\ITAS_PRO\bs-taxaudit-core-server\src\main\java\com\act\taxaudit\persistence\mapper\DeskAuditMapper.java
 C:\Users\HP\Documents\ITAS_PRO\bs-taxaudit-core-server\src\main\java\com\act\taxaudit\TaxAuditServiceApplication.java
