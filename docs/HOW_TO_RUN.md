@@ -1,51 +1,48 @@
-# How to Run the Desk Audit Application
+# How to Run WITHOUT Docker
 
-## The Problem
-You got: `FATAL: password authentication failed for user "root"`
-This means PostgreSQL is NOT running.
+## Prerequisites
+- PostgreSQL running locally on port 5432
+- Kafka running locally on port 9092 (optional - app works without it)
+- Java 17+
+- Maven
 
-## Solution: Start PostgreSQL and Kafka
+## Step 1: Setup PostgreSQL
 
-### Step 1: Start Docker Containers
+Create database:
+```sql
+CREATE DATABASE taxaudit_db;
+CREATE USER postgres WITH PASSWORD 'postgres';
+GRANT ALL PRIVILEGES ON DATABASE taxaudit_db TO postgres;
+```
+
+## Step 2: Start the Application
+
 ```bash
 cd bs-taxaudit-core-server
-docker-compose up -d
+./mvnw spring-boot:run --args="--spring.profiles.active=local"
 ```
 
-### Step 2: Wait 30 Seconds
-Let PostgreSQL and Kafka start up.
-
-### Step 3: Verify PostgreSQL is Running
+Or on Windows:
 ```bash
-docker-compose ps
-```
-You should see 3 containers with status "Up".
-
-### Step 4: Start the Application
-```bash
-cd bs-taxaudit-core-server
-./mvnw spring-boot:run
+mvnw spring-boot:run -Dspring-boot.run.arguments="--spring.profiles.active=local"
 ```
 
-### Step 5: Test
+## Step 3: Test
+
 ```bash
-curl -X POST http://localhost:8082/api/v1/desk-audits \
+curl -X POST http://localhost:8080/api/v1/desk-audits \
   -H "Content-Type: application/json" \
   -d "{\"auditCaseId\":\"12345678-1234-1234-1234-123456789012\",\"tin\":\"1234567890\"}"
 ```
 
-## If You Get Errors
+## Configuration
 
-### Port 5432 already in use
-```bash
-docker-compose down
-docker-compose up -d
-```
+The app uses `application-local.yml`:
+- PostgreSQL: localhost:5432, user: postgres, pass: postgres
+- Kafka: localhost:9092 (if not running, app still works)
+- Port: 8080
 
-### Application won't start
-Make sure Docker is running first!
+## Verify
 
-## Services
-- Application: http://localhost:8082/api/v1
-- Kafka UI: http://localhost:8080
-- PostgreSQL: localhost:5432 (user: root, pass: root@1234)
+- Health: http://localhost:8080/api/v1/actuator/health
+- API: http://localhost:8080/api/v1/desk-audits
