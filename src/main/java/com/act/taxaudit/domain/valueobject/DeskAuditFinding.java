@@ -1,5 +1,8 @@
 package com.act.taxaudit.domain.valueobject;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Objects;
 
 /**
@@ -11,7 +14,12 @@ public class DeskAuditFinding {
     private final String description;
     private final boolean requiresRiskUpdate;
 
-    public DeskAuditFinding(String area, Severity severity, String description, boolean requiresRiskUpdate) {
+    @JsonCreator
+    public DeskAuditFinding(
+            @JsonProperty("area") String area,
+            @JsonProperty("severity") Severity severity,
+            @JsonProperty("description") String description,
+            @JsonProperty("requiresRiskUpdate") boolean requiresRiskUpdate) {
         if (area == null || area.isBlank()) {
             throw new IllegalArgumentException("Finding area cannot be null or blank");
         }

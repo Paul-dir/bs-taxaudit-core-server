@@ -1,5 +1,8 @@
 package com.act.taxaudit.domain.valueobject;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -15,9 +18,15 @@ public class DocumentRequest {
     private final LocalDateTime dueDate;
     private final int reminderCount;
 
-    public DocumentRequest(String requestId, String documentType, String description,
-                          LocalDateTime requestedAt, String requestedByActorId,
-                          LocalDateTime dueDate, int reminderCount) {
+    @JsonCreator
+    public DocumentRequest(
+            @JsonProperty("requestId") String requestId,
+            @JsonProperty("documentType") String documentType,
+            @JsonProperty("description") String description,
+            @JsonProperty("requestedAt") LocalDateTime requestedAt,
+            @JsonProperty("requestedByActorId") String requestedByActorId,
+            @JsonProperty("dueDate") LocalDateTime dueDate,
+            @JsonProperty("reminderCount") int reminderCount) {
         if (requestId == null || requestId.isBlank()) {
             throw new IllegalArgumentException("Request ID cannot be null or blank");
         }

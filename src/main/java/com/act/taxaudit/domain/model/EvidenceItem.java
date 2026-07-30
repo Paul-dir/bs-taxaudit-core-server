@@ -1,6 +1,8 @@
 package com.act.taxaudit.domain.model;
 
 import com.act.taxaudit.domain.valueobject.EvidenceSourceType;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -17,8 +19,14 @@ public class EvidenceItem {
     private final LocalDateTime collectedAt;
     private final String collectedByActorId;
 
-    public EvidenceItem(String evidenceId, EvidenceSourceType sourceType, String description,
-                       String documentReference, LocalDateTime collectedAt, String collectedByActorId) {
+    @JsonCreator
+    public EvidenceItem(
+            @JsonProperty("evidenceId") String evidenceId,
+            @JsonProperty("sourceType") EvidenceSourceType sourceType,
+            @JsonProperty("description") String description,
+            @JsonProperty("documentReference") String documentReference,
+            @JsonProperty("collectedAt") LocalDateTime collectedAt,
+            @JsonProperty("collectedByActorId") String collectedByActorId) {
         if (evidenceId == null || evidenceId.isBlank()) {
             throw new IllegalArgumentException("Evidence ID cannot be null or blank");
         }

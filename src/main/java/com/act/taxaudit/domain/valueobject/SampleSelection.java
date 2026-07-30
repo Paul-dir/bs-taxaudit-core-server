@@ -1,5 +1,8 @@
 package com.act.taxaudit.domain.valueobject;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -12,7 +15,12 @@ public class SampleSelection {
     private final List<String> selectedItems;
     private final int sampleSize;
 
-    public SampleSelection(SamplingMethod method, String criteria, List<String> selectedItems, int sampleSize) {
+    @JsonCreator
+    public SampleSelection(
+            @JsonProperty("method") SamplingMethod method,
+            @JsonProperty("criteria") String criteria,
+            @JsonProperty("selectedItems") List<String> selectedItems,
+            @JsonProperty("sampleSize") int sampleSize) {
         if (method == null) {
             throw new IllegalArgumentException("Sampling method cannot be null");
         }

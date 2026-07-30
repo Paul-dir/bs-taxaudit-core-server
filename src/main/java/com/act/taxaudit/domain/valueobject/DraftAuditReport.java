@@ -1,5 +1,8 @@
 package com.act.taxaudit.domain.valueobject;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -12,7 +15,12 @@ public class DraftAuditReport {
     private final LocalDateTime preparedAt;
     private final String preparedByActorId;
 
-    public DraftAuditReport(String narrative, String findingsSummary, LocalDateTime preparedAt, String preparedByActorId) {
+    @JsonCreator
+    public DraftAuditReport(
+            @JsonProperty("narrative") String narrative,
+            @JsonProperty("findingsSummary") String findingsSummary,
+            @JsonProperty("preparedAt") LocalDateTime preparedAt,
+            @JsonProperty("preparedByActorId") String preparedByActorId) {
         if (narrative == null || narrative.isBlank()) {
             throw new IllegalArgumentException("Report narrative cannot be null or blank");
         }

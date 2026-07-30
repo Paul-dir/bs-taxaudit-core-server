@@ -1,5 +1,8 @@
 package com.act.taxaudit.domain.valueobject;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -12,7 +15,12 @@ public class FraudFlag {
     private final LocalDateTime flaggedAt;
     private final String flaggedByActorId;
 
-    public FraudFlag(String flagId, String indicatorNotes, LocalDateTime flaggedAt, String flaggedByActorId) {
+    @JsonCreator
+    public FraudFlag(
+            @JsonProperty("flagId") String flagId,
+            @JsonProperty("indicatorNotes") String indicatorNotes,
+            @JsonProperty("flaggedAt") LocalDateTime flaggedAt,
+            @JsonProperty("flaggedByActorId") String flaggedByActorId) {
         if (flagId == null || flagId.isBlank()) {
             throw new IllegalArgumentException("Flag ID cannot be null or blank");
         }
