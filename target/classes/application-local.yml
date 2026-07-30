@@ -1,9 +1,11 @@
 spring:
   application:
     name: bs-taxaudit-core-server
+
   threads:
     virtual:
       enabled: true
+
   jpa:
     hibernate:
       ddl-auto: validate
@@ -11,34 +13,286 @@ spring:
       hibernate:
         format_sql: true
         use_sql_comments: true
+
   datasource:
     url: jdbc:postgresql://localhost:5432/taxaudit_db?stringtype=unspecified
     username: postgres
     password: postgres
+    driver-class-name: org.postgresql.Driver
+
     hikari:
       maximum-pool-size: 10
       minimum-idle: 2
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+
   flyway:
+    enabled: true
     locations: classpath:db/migration
     baseline-on-migrate: true
+
+
   kafka:
     bootstrap-servers: localhost:9092
+
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+      properties:
+        spring.json.add.type.headers: false
+        spring.json.value.default.type: com.act.taxaudit.domain.event.DomainEvent
+
+
     consumer:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+
       properties:
+        spring.json.add.type.headers: false
+        spring.json.value.default.type: com.act.taxaudit.domain.event.DomainEvent
         spring.json.trusted.packages: "com.act.taxaudit.domain.event"
+
+
+    listener:
+      missing-topics-fatal: false
+      auto-startup: false
+
+
 
 server:
   port: 8080
+
   servlet:
     context-path: /api/v1
 
+  error:
+    include-message: always
+    include-binding-errors: always
+
+
+
 management:
+
   endpoints:
     web:
       exposure:
-        include: health,info
+        include:
+          - health
+          - info
+          - metrics
+          - prometheus
+
+
+  endpoint:
+
+    health:
+      show-details: always
+
+
+  metrics:
+
+    distribution:
+
+      percentiles-histogram:
+
+        http:
+          server:
+            requests: true
+
+
+  tracing:
+    sampling:
+      probability: 1.0
+
+
+
+logging:
+
+  level:
+
+    root: INFO
+
+    com.act.taxaudit: DEBUG
+
+    org.springframework.web: INFO
+
+    org.springframework.data: DEBUG
+
+
+  pattern:
+
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %X{traceId} %X{correlationId} %X{actorId} - %msg%n"
+
+
+
+resilience4j:
+
+  circuitbreaker:
+
+    instances:
+
+      data-warehouse:
+        slidingWindowSize: 100
+        failureRateThreshold: 50
+        waitDurationInOpenState: 30000
+        permittedNumberOfCallsInHalfOpenState: 10
+
+
+      third-party-data:
+        slidingWindowSize: 100
+        failureRateThreshold: 50
+        waitDurationInOpenState: 30000
+        permittedNumberOfCallsInHalfOpenState: 10
+
+
+      dms:
+        slidingWindowSize: 100
+        failureRateThreshold: 50
+        waitDurationInOpenState: 30000
+        permittedNumberOfCallsInHalfOpenState: 10
+
+
+      risk-engine:
+        slidingWindowSize: 100
+        failureRateThreshold: 50
+        waitDurationInOpenState: 30000
+        permittedNumberOfCallsInHalfOpenState: 10
+
+
+      case-management:
+        slidingWindowSize: 100
+        failureRateThreshold: 50
+        waitDurationInOpenState: 30000
+        permittedNumberOfCallsInHalfOpenState: 10
+
+
+      fraud:
+        slidingWindowSize: 100
+        failureRateThreshold: 50
+        waitDurationInOpenState: 30000
+        permittedNumberOfCallsInHalfOpenState: 10
+
+
+      notification-engine:
+        slidingWindowSize: 100
+        failureRateThreshold: 50
+        waitDurationInOpenState: 30000
+        permittedNumberOfCallsInHalfOpenState: 10
+
+
+
+  retry:
+
+    instances:
+
+      data-warehouse:
+        maxAttempts: 3
+        waitDuration: 1000
+
+
+      third-party-data:
+        maxAttempts: 3
+        waitDuration: 1000
+
+
+      dms:
+        maxAttempts: 3
+        waitDuration: 1000
+
+
+      risk-engine:
+        maxAttempts: 3
+        waitDuration: 1000
+
+
+      case-management:
+        maxAttempts: 3
+        waitDuration: 1000
+
+
+      fraud:
+        maxAttempts: 3
+        waitDuration: 1000
+
+
+      notification-engine:
+        maxAttempts: 3
+        waitDuration: 1000
+
+
+
+springdoc:
+
+  api-docs:
+    path: /openapi
+
+  swagger-ui:
+    path: /swagger-ui.html
+    use-root-path: true
+
+
+
+integrations:
+
+  data-warehouse:
+    base-url: http://localhost:8083
+    connect-timeout-ms: 5000
+    read-timeout-ms: 15000
+
+
+  third-party-data:
+    base-url: http://localhost:8084
+    connect-timeout-ms: 5000
+    read-timeout-ms: 15000
+
+
+  dms:
+    base-url: http://localhost:8085
+    connect-timeout-ms: 5000
+    read-timeout-ms: 15000
+
+
+  risk-engine:
+    base-url: http://localhost:8086
+    connect-timeout-ms: 5000
+    read-timeout-ms: 15000
+
+
+  case-management:
+    base-url: http://localhost:8087
+    connect-timeout-ms: 5000
+    read-timeout-ms: 15000
+
+
+  fraud:
+    base-url: http://localhost:8088
+    connect-timeout-ms: 5000
+    read-timeout-ms: 15000
+
+
+  notification:
+    base-url: http://localhost:8089
+    connect-timeout-ms: 5000
+    read-timeout-ms: 15000
+
+
+
+itas:
+
+  deskaudit:
+
+    reminder-cron: "0 0 9 * * *"
+
+    reminder-due-days: 7
+
+    max-reminder-attempts: 2
+
+
+  outbox:
+
+    poll-interval-ms: 5000
+
+    max-attempts: 5
