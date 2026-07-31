@@ -1,5 +1,6 @@
-﻿package com.act.taxaudit.api.dto.request;
+package com.act.taxaudit.api.dto.request;
 
+import com.act.taxaudit.domain.valueobject.DeskAuditFinding;
 import java.util.List;
 
-public record RecordFindingsRequest(java.util.List<com.act.taxaudit.domain.valueobject.DeskAuditFinding> findings) {}
+public record RecordFindingsRequest(List<DeskAuditFinding> findings) {}

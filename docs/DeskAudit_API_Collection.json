@@ -1,82 +1,370 @@
 {
   "info": {
-    "name": "Desk Audit API Collection",
-    "description": "Complete API collection for testing Desk Audit Execution functionality",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    "name": "Desk Audit API",
+    "description": "Complete API collection for bs-taxaudit-core-server with all 10 endpoints",
+    "schema": "https://schema.getpostman.com/json/documentation/v2.1.0/docs/documentation.html"
   },
   "variable": [
     {
       "key": "baseUrl",
-      "value": "http://localhost:8080",
-      "type": "string"
+      "value": "http://localhost:8082/api/v1"
     },
     {
-      "key": "auditId",
-      "value": "",
-      "type": "string"
+      "key": "deskAuditId",
+      "value": ""
+    },
+    {
+      "key": "actorId",
+      "value": "auditor-001"
     }
   ],
   "item": [
     {
       "name": "1. Start Desk Audit",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"auditCaseId\": \"12345678-1234-1234-1234-123456789012\",\n  \"tin\": \"1234567890\"\n}"
-        },
-        "url": {
-          "raw": "{{baseUrl}}/desk-audits",
-          "host": ["{{baseUrl}}"],
-          "path": ["desk-audits"]
-        }
-      },
       "event": [
         {
           "listen": "test",
           "script": {
             "exec": [
-              "if (pm.response.code === 201) {",
-              "    var jsonData = pm.response.json();",
-              "    pm.collectionVariables.set(\"auditId\", jsonData.id);",
-              "    console.log(\"Audit ID: \" + jsonData.id);",
-              "}"
+              "pm.test('Status 201', () => pm.response.to.have.status(201));",
+              "pm.test('Has success field', () => pm.response.json().success === true);",
+              "pm.test('Has data field', () => pm.response.json().data !== undefined);",
+              "pm.collectionVariables.set('deskAuditId', pm.response.json().data.id);"
             ]
           }
         }
-      ]
-    },
-    {
-      "name": "2. Gather Evidence",
+      ],
       "request": {
         "method": "POST",
+        "url": "{{baseUrl}}/desk-audits",
         "header": [
           {
             "key": "Content-Type",
             "value": "application/json"
+          },
+          {
+            "key": "X-Actor-Id",
+            "value": "{{actorId}}"
           }
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"actorId\": \"auditor-001\"\n}"
-        },
-        "url": {
-          "raw": "{{baseUrl}}/desk-audits/{{auditId}}/evidence",
-          "host": ["{{baseUrl}}"],
-          "path": ["desk-audits", "{{auditId}}", "evidence"]
+          "raw": "{\"auditCaseId\":\"12345678-1234-1234-1234-123456789012\",\"tin\":\"0011223344\"}"
         }
       }
     },
     {
-      "name": "3. Request Supporting Documents",
+      "name": "2. Gather Evidence",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('Success is true', () => pm.response.json().success === true);"
+            ]
+          }
+        }
+      ],
       "request": {
         "method": "POST",
+        "url": "{{baseUrl}}/desk-audits/{{deskAuditId}}/evidence",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Actor-Id",
+            "value": "{{actorId}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"actorId\":\"auditor-001\"}"
+        }
+      }
+    },
+    {
+      "name": "3. Request Documents",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('Document request count > 0', () => pm.response.json().data.documentRequestCount > 0);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/desk-audits/{{deskAuditId}}/document-requests",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Actor-Id",
+            "value": "{{actorId}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"documentTypes\":[\"BANK_STATEMENT\",\"INVOICE\"],\"requestedByActorId\":\"auditor-001\"}"
+        }
+      }
+    },
+    {
+      "name": "4. Determine Sampling Method",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('Sampling method set', () => pm.response.json().data.samplingMethod === 'RANDOM');"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/desk-audits/{{deskAuditId}}/sampling",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Actor-Id",
+            "value": "{{actorId}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"method\":\"RANDOM\",\"criteria\":\"High-value transactions\",\"selectedItems\":[\"INV-001\",\"INV-002\"],\"sampleSize\":2}"
+        }
+      }
+    },
+    {
+      "name": "5. Record Findings",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('Finding count > 0', () => pm.response.json().data.findingCount > 0);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/desk-audits/{{deskAuditId}}/findings",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Actor-Id",
+            "value": "{{actorId}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"findings\":[{\"area\":\"VAT Reconciliation\",\"severity\":\"MEDIUM\",\"description\":\"Discrepancy in input VAT claims\",\"requiresRiskUpdate\":true}]}"
+        }
+      }
+    },
+    {
+      "name": "6. Submit Draft Report",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('Has draft report', () => pm.response.json().data.hasDraftReport === true);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/desk-audits/{{deskAuditId}}/draft-report",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Actor-Id",
+            "value": "{{actorId}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"narrative\":\"Audit completed\",\"findingsSummary\":\"Minor discrepancies found\",\"preparedByActorId\":\"auditor-001\"}"
+        }
+      }
+    },
+    {
+      "name": "7. Team Leader Decision",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('Decision recorded', () => pm.response.json().data.teamLeaderDecision === 'APPROVE_FINALIZE');"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/desk-audits/{{deskAuditId}}/team-leader-decision",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Actor-Id",
+            "value": "team-leader-001"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"decision\":\"APPROVE_FINALIZE\",\"actorId\":\"team-leader-001\",\"narrative\":\"Approved\"}"
+        }
+      }
+    },
+    {
+      "name": "8. Flag Fraud",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('Fraud flagged', () => pm.response.json().data.hasFraudFlag === true);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/desk-audits/{{deskAuditId}}/fraud-flag",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Actor-Id",
+            "value": "team-leader-001"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"indicatorNotes\":\"Suspected fraud\",\"flaggedByActorId\":\"team-leader-001\"}"
+        }
+      }
+    },
+    {
+      "name": "9. Finalize Desk Audit",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('Status is FINALIZED', () => pm.response.json().data.status === 'FINALIZED');"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/desk-audits/{{deskAuditId}}/finalize",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Actor-Id",
+            "value": "team-leader-001"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"finalizedByActorId\":\"team-leader-001\"}"
+        }
+      }
+    },
+    {
+      "name": "10. Get Desk Audit",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('Has data', () => pm.response.json().data !== undefined);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/desk-audits/{{deskAuditId}}",
+        "header": [
+          {
+            "key": "X-Actor-Id",
+            "value": "{{actorId}}"
+          }
+        ]
+      }
+    },
+    {
+      "name": "11. Webhook Health Check",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/webhooks/health"
+      }
+    },
+    {
+      "name": "12. Negative - Invalid TIN",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 422', () => pm.response.to.have.status(422));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/desk-audits",
         "header": [
           {
             "key": "Content-Type",
@@ -85,12 +373,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"documentTypes\": [\"INVOICE\", \"RECEIPT\", \"BANK_STATEMENT\"],\n  \"requestedByActorId\": \"auditor-001\"\n}"
-        },
-        "url": {
-          "raw": "{{baseUrl}}/desk-audits/{{auditId}}/document-requests",
-          "host": ["{{baseUrl}}"],
-          "path": ["desk-audits", "{{auditId}}", "document-requests"]
+          "raw": "{\"auditCaseId\":\"12345678-1234-1234-1234-123456789012\",\"tin\":\"\"}"
         }
       }
     }

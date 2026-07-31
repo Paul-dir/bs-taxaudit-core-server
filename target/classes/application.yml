@@ -1,11 +1,12 @@
 spring:
   application:
     name: bs-taxaudit-core-server
-  # Enable Java 21 virtual threads (Project Loom) — Tomcat + @Async use them
-  # Gives near-unlimited concurrency for I/O-bound workloads (engine adapters, DB calls)
+
+  # Enable Java 21 virtual threads (Project Loom)
   threads:
     virtual:
       enabled: true
+
   jpa:
     hibernate:
       ddl-auto: validate
@@ -13,29 +14,34 @@ spring:
       hibernate:
         format_sql: true
         use_sql_comments: true
+
   datasource:
-    # stringtype=unspecified — lets the PG driver send JSON strings without a type tag,
-    # so PostgreSQL casts them based on the target column type (jsonb). Without this,
-    # the JsonbConverter's String output is sent as varchar and PG refuses to cast.
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:taxaudit_db}?stringtype=unspecified
-    username: ${DB_USER:root}
-    password: ${DB_PASS:root@1234}
+    # PostgreSQL local database configuration
+    # Database: taxaudit_db
+    # User: postgres
+    # Password: postgres123
+    url: jdbc:postgresql://localhost:5432/taxaudit_db?stringtype=unspecified
+    username: postgres
+    password: postgres123
     hikari:
       maximum-pool-size: 10
       minimum-idle: 2
+
   flyway:
     locations: classpath:db/migration
     baseline-on-migrate: true
 
-  # Apache Kafka configuration (mandatory deviation from bs-filling)
+  # Apache Kafka configuration
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       properties:
         spring.json.add.type.headers: false
         spring.json.value.default.type: com.act.taxaudit.domain.event.DomainEvent
+
     consumer:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
@@ -43,8 +49,10 @@ spring:
         spring.json.add.type.headers: false
         spring.json.value.default.type: com.act.taxaudit.domain.event.DomainEvent
         spring.json.trusted.packages: "com.act.taxaudit.domain.event"
+
     listener:
       missing-topics-fatal: false
+
 
 server:
   port: ${SERVER_PORT:8082}
@@ -54,21 +62,34 @@ server:
     include-message: always
     include-binding-errors: always
 
+  # CORS configuration for frontend integration
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:4200}
+    allowed-methods: GET,POST,PUT,DELETE,OPTIONS
+    allowed-headers: "*"
+    allow-credentials: true
+    max-age: 3600
+
+
 management:
   endpoints:
     web:
       exposure:
         include: health,info,metrics,prometheus
+
   endpoint:
     health:
       show-details: always
+
   metrics:
     distribution:
       percentiles-histogram:
         http.server.requests: true
+
   tracing:
     sampling:
       probability: 1.0
+
 
 logging:
   level:
@@ -76,137 +97,168 @@ logging:
     com.act.taxaudit: DEBUG
     org.springframework.web: INFO
     org.springframework.data: DEBUG
+
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %X{traceId} %X{correlationId} %X{actorId} - %msg%n"
     file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %X{traceId} %X{correlationId} %X{actorId} - %msg%n"
 
+
 resilience4j:
   circuitbreaker:
     instances:
+
       data-warehouse:
         slidingWindowSize: 100
         failureRateThreshold: 50
         waitDurationInOpenState: 30000
         permittedNumberOfCallsInHalfOpenState: 10
+
       third-party-data:
         slidingWindowSize: 100
         failureRateThreshold: 50
         waitDurationInOpenState: 30000
         permittedNumberOfCallsInHalfOpenState: 10
+
       dms:
         slidingWindowSize: 100
         failureRateThreshold: 50
         waitDurationInOpenState: 30000
         permittedNumberOfCallsInHalfOpenState: 10
+
       risk-engine:
         slidingWindowSize: 100
         failureRateThreshold: 50
         waitDurationInOpenState: 30000
         permittedNumberOfCallsInHalfOpenState: 10
+
       case-management:
         slidingWindowSize: 100
         failureRateThreshold: 50
         waitDurationInOpenState: 30000
         permittedNumberOfCallsInHalfOpenState: 10
+
       fraud:
         slidingWindowSize: 100
         failureRateThreshold: 50
         waitDurationInOpenState: 30000
         permittedNumberOfCallsInHalfOpenState: 10
+
       notification-engine:
         slidingWindowSize: 100
         failureRateThreshold: 50
         waitDurationInOpenState: 30000
         permittedNumberOfCallsInHalfOpenState: 10
+
+
   retry:
     instances:
+
       data-warehouse:
         maxAttempts: 3
         waitDuration: 1000
         retryExceptions:
           - java.net.ConnectException
           - java.io.IOException
+
       third-party-data:
         maxAttempts: 3
         waitDuration: 1000
         retryExceptions:
           - java.net.ConnectException
           - java.io.IOException
+
       dms:
         maxAttempts: 3
         waitDuration: 1000
         retryExceptions:
           - java.net.ConnectException
           - java.io.IOException
+
       risk-engine:
         maxAttempts: 3
         waitDuration: 1000
         retryExceptions:
           - java.net.ConnectException
           - java.io.IOException
+
       case-management:
         maxAttempts: 3
         waitDuration: 1000
         retryExceptions:
           - java.net.ConnectException
           - java.io.IOException
+
       fraud:
         maxAttempts: 3
         waitDuration: 1000
         retryExceptions:
           - java.net.ConnectException
           - java.io.IOException
+
       notification-engine:
         maxAttempts: 3
         waitDuration: 1000
         retryExceptions:
           - java.net.ConnectException
           - java.io.IOException
+
 
 springdoc:
   api-docs:
     path: /openapi
+
   swagger-ui:
     path: /swagger-ui.html
     use-root-path: true
 
-# ── External integration base URLs ──
+
+# External integration base URLs
 integrations:
+
   data-warehouse:
     base-url: ${DATA_WAREHOUSE_BASE_URL:http://localhost:8083}
     connect-timeout-ms: 5000
     read-timeout-ms: 15000
+
   third-party-data:
     base-url: ${THIRD_PARTY_DATA_BASE_URL:http://localhost:8084}
     connect-timeout-ms: 5000
     read-timeout-ms: 15000
+
   dms:
     base-url: ${DMS_BASE_URL:http://localhost:8085}
     connect-timeout-ms: 5000
     read-timeout-ms: 15000
+
   risk-engine:
     base-url: ${RISK_ENGINE_BASE_URL:http://localhost:8086}
     connect-timeout-ms: 5000
     read-timeout-ms: 15000
+
   case-management:
     base-url: ${CASE_MGMT_BASE_URL:http://localhost:8087}
     connect-timeout-ms: 5000
     read-timeout-ms: 15000
+
   fraud:
     base-url: ${FRAUD_BASE_URL:http://localhost:8088}
     connect-timeout-ms: 5000
     read-timeout-ms: 15000
+
   notification:
     base-url: ${NOTIFICATION_BASE_URL:http://localhost:8089}
     connect-timeout-ms: 5000
     read-timeout-ms: 15000
 
-# ── Desk Audit specific configuration ──
+
+# Desk Audit configuration
 itas:
+
   deskaudit:
-    reminder-cron: "0 0 9 * * *"  # Daily at 9 AM
+    reminder-cron: "0 0 9 * * *"
     reminder-due-days: 7
     max-reminder-attempts: 2
+
   outbox:
     poll-interval-ms: 5000
     max-attempts: 5
