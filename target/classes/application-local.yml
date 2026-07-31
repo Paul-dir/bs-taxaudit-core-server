@@ -16,8 +16,8 @@ spring:
 
   datasource:
     url: jdbc:postgresql://localhost:5432/taxaudit_db?stringtype=unspecified
-    username: 
-    password: 
+    username: postgres   
+    password: postgres   
     driver-class-name: org.postgresql.Driver
 
     hikari:
