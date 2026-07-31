@@ -1,6 +1,8 @@
 spring:
   application:
     name: bs-taxaudit-core-server
+  profiles:
+    active: local
 
   # Enable Java 21 virtual threads (Project Loom)
   threads:
@@ -260,3 +262,6 @@ itas:
   outbox:
     poll-interval-ms: 5000
     max-attempts: 5
+
+  profiles:
+    active: local
