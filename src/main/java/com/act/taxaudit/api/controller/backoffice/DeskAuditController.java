@@ -1,6 +1,10 @@
 package com.act.taxaudit.api.controller.backoffice;
 
-import com.act.taxaudit.api.dto.DeskAuditDTOs;
+import com.act.taxaudit.api.dto.request.DetermineSamplingRequest;
+import com.act.taxaudit.api.dto.request.GatherEvidenceRequest;
+import com.act.taxaudit.api.dto.request.RecordFindingsRequest;
+import com.act.taxaudit.api.dto.request.RequestDocumentsRequest;
+import com.act.taxaudit.api.dto.request.StartDeskAuditRequest;
 import com.act.taxaudit.application.usecase.*;
 import com.act.taxaudit.domain.aggregate.DeskAudit;
 import com.act.taxaudit.domain.valueobject.*;
@@ -37,25 +41,25 @@ public class DeskAuditController {
     }
 
     @PostMapping
-    public ResponseEntity<DeskAudit> startDeskAudit(@RequestBody DeskAuditDTOs.StartDeskAuditRequest request) {
+    public ResponseEntity<DeskAudit> startDeskAudit(@RequestBody StartDeskAuditRequest request) {
         DeskAudit deskAudit = startDeskAuditUseCase.execute(request.auditCaseId(), request.tin());
         return ResponseEntity.status(HttpStatus.CREATED).body(deskAudit);
     }
 
     @PostMapping("/{id}/evidence")
-    public ResponseEntity<DeskAudit> gatherEvidence(@PathVariable UUID id, @RequestBody DeskAuditDTOs.GatherEvidenceRequest request) {
+    public ResponseEntity<DeskAudit> gatherEvidence(@PathVariable UUID id, @RequestBody GatherEvidenceRequest request) {
         DeskAudit deskAudit = gatherEvidenceUseCase.execute(id, request.actorId());
         return ResponseEntity.ok(deskAudit);
     }
 
     @PostMapping("/{id}/document-requests")
-    public ResponseEntity<DeskAudit> requestDocuments(@PathVariable UUID id, @RequestBody DeskAuditDTOs.RequestDocumentsRequest request) {
+    public ResponseEntity<DeskAudit> requestDocuments(@PathVariable UUID id, @RequestBody RequestDocumentsRequest request) {
         DeskAudit deskAudit = requestSupportingDocumentsUseCase.execute(id, request.documentTypes(), request.requestedByActorId());
         return ResponseEntity.ok(deskAudit);
     }
 
     @PostMapping("/{id}/sampling")
-    public ResponseEntity<DeskAudit> determineSampling(@PathVariable UUID id, @RequestBody DeskAuditDTOs.DetermineSamplingRequest request) {
+    public ResponseEntity<DeskAudit> determineSampling(@PathVariable UUID id, @RequestBody DetermineSamplingRequest request) {
         SampleSelection selection = new SampleSelection(
             request.method(),
             request.criteria(),
@@ -67,7 +71,7 @@ public class DeskAuditController {
     }
 
     @PostMapping("/{id}/findings")
-    public ResponseEntity<DeskAudit> recordFindings(@PathVariable UUID id, @RequestBody DeskAuditDTOs.RecordFindingsRequest request) {
+    public ResponseEntity<DeskAudit> recordFindings(@PathVariable UUID id, @RequestBody RecordFindingsRequest request) {
         DeskAudit deskAudit = recordDeskAuditFindingsUseCase.execute(id, request.findings());
         return ResponseEntity.ok(deskAudit);
     }
