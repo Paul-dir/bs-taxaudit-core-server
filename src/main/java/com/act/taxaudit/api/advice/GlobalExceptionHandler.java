@@ -1,5 +1,6 @@
 package com.act.taxaudit.api.advice;
 
+import com.act.taxaudit.app.exception.InterModuleException;
 import com.act.taxaudit.domain.exception.DomainException;
 import com.act.taxaudit.domain.exception.EngineAdapterException;
 import com.act.taxaudit.domain.exception.ResourceNotFoundException;
@@ -47,6 +48,15 @@ public class GlobalExceptionHandler {
         problem.setTitle("External Service Error");
         problem.setDetail(ex.getMessage());
         problem.setType(URI.create("https://api.itas.gov.et/errors/bad-gateway"));
+        return problem;
+    }
+
+    @ExceptionHandler(InterModuleException.class)
+    public ProblemDetail handleInterModuleException(InterModuleException ex) {
+        ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.SERVICE_UNAVAILABLE);
+        problem.setTitle("Inter-Module Communication Error");
+        problem.setDetail(ex.getMessage());
+        problem.setType(URI.create("https://api.itas.gov.et/errors/inter-module-error"));
         return problem;
     }
 }
