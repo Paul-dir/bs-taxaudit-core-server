@@ -1,0 +1,15 @@
+package com.mor.itas.planning.domain.valueobject;
+
+public enum AuditCaseStatus {
+    CREATED,
+    SELECTED_FOR_AUDIT,
+    PENDING_PRIORITIZATION,
+    STORED_FOR_ASSIGNMENT,
+    ASSIGNED_TO_TEAM_LEADER,
+    ASSIGNED_TO_AUDITOR,
+    ASSIGNED,
+    IN_PROGRESS,
+    CLOSED,
+    PLAN_APPROVED,
+    PENDING_JOINT_AUDIT_FORMATION
+}
