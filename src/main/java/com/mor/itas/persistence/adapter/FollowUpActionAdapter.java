@@ -1,4 +1,4 @@
-package com.mor.itas.persistence.adapter.qa;
+package com.mor.itas.persistence.adapter;
 
 import com.mor.itas.domain.model.FollowUpAction;
 import com.mor.itas.persistence.jpa.entity.FollowUpActionEntity;
@@ -6,7 +6,6 @@ import com.mor.itas.persistence.jpa.repository.FollowUpActionRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Optional;
 
 @Component
 public class FollowUpActionAdapter {

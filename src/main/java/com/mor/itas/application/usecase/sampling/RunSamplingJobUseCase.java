@@ -1,10 +1,10 @@
-package com.mor.itas.application.usecase.qa.sampling;
+package com.mor.itas.application.usecase.sampling;
 
 import com.mor.itas.domain.model.Case;
 import com.mor.itas.domain.model.QaReviewCase;
 import com.mor.itas.domain.model.QaSamplingConfig;
-import com.mor.itas.domain.service.qa.SamplingSelector;
-import com.mor.itas.persistence.adapter.qa.QaReviewCaseAdapter;
+import com.mor.itas.domain.service.SamplingSelector;
+import com.mor.itas.persistence.adapter.QaReviewCaseAdapter;
 import com.mor.itas.persistence.jpa.repository.QaSamplingConfigRepository;
 import org.springframework.stereotype.Component;
 

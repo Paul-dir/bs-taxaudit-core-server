@@ -1,4 +1,4 @@
-package com.mor.itas.persistence.adapter.qa;
+package com.mor.itas.persistence.adapter;
 
 import com.mor.itas.domain.model.QaFinding;
 import com.mor.itas.persistence.jpa.entity.QaFindingEntity;
@@ -6,7 +6,6 @@ import com.mor.itas.persistence.jpa.repository.QaFindingRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Optional;
 
 @Component
 public class QaFindingAdapter {

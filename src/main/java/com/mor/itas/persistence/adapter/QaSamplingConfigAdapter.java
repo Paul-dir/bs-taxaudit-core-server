@@ -1,4 +1,4 @@
-package com.mor.itas.persistence.adapter.qa;
+package com.mor.itas.persistence.adapter;
 
 import com.mor.itas.domain.model.QaSamplingConfig;
 import com.mor.itas.persistence.jpa.entity.QaSamplingConfigEntity;

@@ -1,4 +1,4 @@
-package com.mor.itas.api.dto.request.qa;
+package com.mor.itas.api.dto.request;
 
 import com.mor.itas.domain.model.QaSamplingConfig;
 import jakarta.validation.constraints.NotBlank;

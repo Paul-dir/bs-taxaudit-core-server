@@ -1,4 +1,4 @@
-package com.mor.itas.api.dto.response.qa;
+package com.mor.itas.api.dto.response;
 
 import com.mor.itas.domain.model.QaSamplingConfig;
 import java.time.LocalDateTime;

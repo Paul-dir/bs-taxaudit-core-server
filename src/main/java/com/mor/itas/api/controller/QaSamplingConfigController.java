@@ -1,18 +1,15 @@
-package com.mor.itas.api.controller.qa;
+package com.mor.itas.api.controller;
 
-import com.mor.itas.api.dto.request.qa.CreateSamplingConfigRequest;
-import com.mor.itas.api.dto.response.qa.SamplingConfigResponse;
+import com.mor.itas.api.dto.request.CreateSamplingConfigRequest;
+import com.mor.itas.api.dto.response.SamplingConfigResponse;
 import com.mor.itas.domain.model.QaSamplingConfig;
-import com.mor.itas.domain.service.qa.SamplingSelector;
-import com.mor.itas.persistence.adapter.qa.QaSamplingConfigAdapter;
-import com.mor.itas.persistence.adapter.qa.QaReviewCaseAdapter;
+import com.mor.itas.domain.service.SamplingSelector;
+import com.mor.itas.persistence.adapter.QaSamplingConfigAdapter;
+import com.mor.itas.persistence.adapter.QaReviewCaseAdapter;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/qa/config/sampling")

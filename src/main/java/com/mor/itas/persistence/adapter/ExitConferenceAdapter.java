@@ -1,11 +1,10 @@
-package com.mor.itas.persistence.adapter.qa;
+package com.mor.itas.persistence.adapter;
 
 import com.mor.itas.domain.model.ExitConference;
 import com.mor.itas.persistence.jpa.entity.ExitConferenceEntity;
 import com.mor.itas.persistence.jpa.repository.ExitConferenceRepository;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Optional;
 
 @Component

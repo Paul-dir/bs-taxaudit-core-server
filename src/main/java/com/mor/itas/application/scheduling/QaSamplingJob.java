@@ -1,6 +1,6 @@
 package com.mor.itas.application.scheduling;
 
-import com.mor.itas.application.usecase.qa.sampling.RunSamplingJobUseCase;
+import com.mor.itas.application.usecase.sampling.RunSamplingJobUseCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
